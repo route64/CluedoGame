@@ -89,8 +89,8 @@ public class Main extends Application {
 		createAIPlayers();
 		GridPane notepad = new Notepad(allClues, noOfAIPlayers).getNotepad();
 		background.add(notepad, 30, 0, 10, 22);
-		allowMovement = new AllowMovement(player, diceTotal, background, noOfAIPlayers, AIPlayers);
-		allowMovement.move(board, dice1, dice2, token);
+		allowMovement = new AllowMovement(player, diceTotal, background, noOfAIPlayers, AIPlayers, board);
+		allowMovement.move(dice1, dice2, token);
 		background = allowMovement.updateBackground();
 	}
 	private Button createRollButton() {

@@ -119,11 +119,11 @@ public class CreateAlert extends Application {
 		}
 		return playerNumbers;
 	}
-	public boolean enterRoom() {
+	public boolean enterRoom(String roomName) {
 		boolean enter = false;
 		Alert alert = new Alert(AlertType.NONE);
 		alert.setTitle("ENTER ROOM");
-		alert.setContentText("Do you want to enter this room?");
+		alert.setContentText("Do you want to enter the "+roomName+"?");
 		alert.getButtonTypes().clear();
 		ButtonType yes = new ButtonType("Yes");
 		ButtonType no = new ButtonType("No");

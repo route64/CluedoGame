@@ -2,11 +2,14 @@ package Practical;
 
 import java.util.ArrayList;
 
+import GameParts.AIPlayer;
+import GameParts.Clue;
 import GameParts.InRoom;
 import Visual.Board;
 import Visual.CreateAlert;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 
@@ -18,17 +21,21 @@ public class AllowMovement {
 	private GridPane background;
 	private int noOfAIPlayers;
 	private ArrayList AIPlayers;
-	
-	public AllowMovement(Player player, int diceTotal, GridPane background, int noOfAIPlayers, ArrayList AIPlayers) {
+	private Board board;
+	private ArrayList<Location> tiles;
+
+	public AllowMovement(Player player, int diceTotal, GridPane background, int noOfAIPlayers, ArrayList AIPlayers, Board board) {
 		this.diceTotal = diceTotal;
 		this.player = player;
 		this.background = background;
 		this.noOfAIPlayers = noOfAIPlayers;
 		this.AIPlayers = AIPlayers;
+		this.board = board;
+		tiles = board.getTiles();
 	}
-	
-	public void move(Board board, Dice dice1, Dice dice2, Label token) {
-		ArrayList<Location> tiles = board.getTiles();
+
+	public void move(Dice dice1, Dice dice2, Label token) {
+		//ArrayList<Location> tiles = board.getTiles();
 		for(int i=0; i<tiles.size(); i++) {
 			Location tile = tiles.get(i);
 			tile.getTile().setOnAction(new EventHandler<ActionEvent>() {
@@ -42,10 +49,10 @@ public class AllowMovement {
 						if(player.inRoom()) {
 							CreateAlert room;
 							if(tile.isPassageway()) {
+								Location end = tile.travelToLocation();
 								room = new CreateAlert();
-								boolean enter = room.enterRoom();
+								boolean enter = room.enterRoom(end.getName());
 								if(enter) {
-									Location end = tile.travelToLocation();
 									String passageEndName = end.getName().toLowerCase();
 									for(int a=0; a<tiles.size(); a++) {
 										Location loc = tiles.get(a);
@@ -77,13 +84,15 @@ public class AllowMovement {
 							board.getBoard().add(token, col, row);
 							if(tile.getIsDoorway()) {
 								CreateAlert enterRoom = new CreateAlert();
-								boolean enter = enterRoom.enterRoom();
-								if(enter) {
-									String door = tile.getName();
-									for(int a=0; a<tiles.size(); a++) {
-										Location loc = tiles.get(a);
-										String locName = loc.getName().toLowerCase();
-										if(door.contains(locName)) {
+								//boolean enter = enterRoom.enterRoom(tile.getName());
+								//if(enter) {
+								String door = tile.getName();
+								for(int a=0; a<tiles.size(); a++) {
+									Location loc = tiles.get(a);
+									String locName = loc.getName().toLowerCase();
+									if(door.contains(locName)) {
+										boolean enter = enterRoom.enterRoom(loc.getName());
+										if(enter) {
 											row = board.getBoard().getRowIndex(loc.getTile());
 											col = board.getBoard().getColumnIndex(loc.getTile());
 											a=tiles.size();
@@ -92,6 +101,7 @@ public class AllowMovement {
 										}
 									}
 								}
+								//}
 								board.getBoard().getChildren().remove(token);
 								board.getBoard().add(token, col, row);
 								//player.setLocation(col, row);
@@ -118,12 +128,27 @@ public class AllowMovement {
 		}
 	}
 	private void initialiseRoomBox() {
+
 		if(player.inRoom()) {
 			if(roomBoxExists) {
 				background.getChildren().remove(roomBox.getBackground());
 			}
-			roomBox = new InRoom(player.getRoom(), noOfAIPlayers, AIPlayers);
-			background.add(roomBox.getBackground(), 22, 20, 6, 2);
+			Button tunnel = new Button("Use Secret Passageway");
+			Button leave = new Button("Leave");
+			//Button ask = new Button("Ask");
+			tunnel.setOnAction(new EventHandler<ActionEvent>() {
+				@Override
+				public void handle(ActionEvent event) {
+
+				}
+			});
+			leave.setOnAction(new EventHandler<ActionEvent>() {
+				@Override
+				public void handle(ActionEvent event) {
+					leaveRoom();
+				}});
+			roomBox = new InRoom(player.getRoom(), noOfAIPlayers, AIPlayers, leave, tunnel);
+			background.add(roomBox.getBackground(), 22, 20, 6, 3);
 			roomBoxExists=true;
 			if(roomBox.getWantToLeave()) {
 				player.leaveRoom();
@@ -139,5 +164,26 @@ public class AllowMovement {
 	}
 	public void updateDiceTotal(int diceTotal) {
 		this.diceTotal = diceTotal;
+	}
+	private void leaveRoom() {
+		int row;
+		int col;
+		CreateAlert leaveRoom = new CreateAlert();
+		Location room = player.getRoom();
+		for(int a=0; a<tiles.size(); a++) {
+			Location loc = tiles.get(a);
+			String locName = loc.getName().toLowerCase();
+			if(room.getName().contains(locName) && room.getName().contains("door")) {
+				boolean leave = leaveRoom.askToLeave();
+				if(leave) {
+					row = board.getBoard().getRowIndex(loc.getTile());
+					col = board.getBoard().getColumnIndex(loc.getTile());
+					a=tiles.size();
+					player.leaveRoom();
+					initialiseRoomBox();
+					player.setLocation(col, row);
+				}
+			}
+		}
 	}
 }

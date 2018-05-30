@@ -15,12 +15,19 @@ public class InRoom {
 	private GridPane background;
 	private Location room;
 	private String[] question;
-	private boolean wantToLeave;
+	//private boolean wantToLeave;
 	private int who;
 	private int noOfPlayers;
 	private ArrayList aiPlayers;
-	public InRoom(Location room, int noOfPlayers, ArrayList players) {
+	private boolean enterTunnel;
+	private boolean leaveRoom;
+	private Button leave;
+	private Button tunnel;
+	
+	public InRoom(Location room, int noOfPlayers, ArrayList players, Button leave, Button tunnel) {
 		background = new GridPane();
+		this.leave = leave;
+		this.tunnel = tunnel;
 		this.room = room;
 		this.noOfPlayers = noOfPlayers;
 		aiPlayers = players;
@@ -31,15 +38,23 @@ public class InRoom {
 		return background;
 	}
 	private void createButtons() {
-		Button tunnel = new Button("Use Secret Passageway");
+		/*Button tunnel = new Button("Use Secret Passageway");
 		Button leave = new Button("Leave");
 		Button ask = new Button("Ask");
+		tunnel.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				
+			}
+		});
 		leave.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
+				
 				CreateAlert leaving = new CreateAlert();
 				leaving.askToLeave();
-			}});
+			}});*/
+		Button ask = new Button("Ask");
 		ask.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
@@ -50,8 +65,9 @@ public class InRoom {
 				CreateAlert answer = new CreateAlert();
 				answer.getAnswer(response, who);
 			}});
-		background.add(leave, 0, 1);
-		background.add(ask, 2, 1);
+		background.add(leave, 0, 1, 2, 1);
+		background.add(ask, 2, 1, 2, 1);
+		background.add(tunnel, 4, 1, 2, 3);
 	}
 	private void createRoomDescription() {
 		Label roomName = new Label(room.getName());
@@ -59,17 +75,19 @@ public class InRoom {
 	}
 	private Clue getResponse(int aiInt, String[] question) {
 		AIPlayer ai = (AIPlayer)aiPlayers.get(aiInt);
-		Clue response;
-		response = ai.revealCard(question);
+		Clue response = ai.revealCard(question);
 		return response;
 	}
 	public int getWhoToAsk() {
 		return who;
 	}
-	public String[] getQuesstion() {
+	public String[] getQuestion() {
 		return question;
 	}
 	public boolean getWantToLeave() {
-		return wantToLeave;
+		return leaveRoom;
+	}
+	public boolean getEnterTunnel() {
+		return enterTunnel;
 	}
 }
