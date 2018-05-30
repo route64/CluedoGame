@@ -23,7 +23,7 @@ public class InRoom {
 	private boolean leaveRoom;
 	private Button leave;
 	private Button tunnel;
-	
+
 	public InRoom(Location room, int noOfPlayers, ArrayList players, Button leave, Button tunnel) {
 		background = new GridPane();
 		this.leave = leave;
@@ -38,22 +38,6 @@ public class InRoom {
 		return background;
 	}
 	private void createButtons() {
-		/*Button tunnel = new Button("Use Secret Passageway");
-		Button leave = new Button("Leave");
-		Button ask = new Button("Ask");
-		tunnel.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent event) {
-				
-			}
-		});
-		leave.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent event) {
-				
-				CreateAlert leaving = new CreateAlert();
-				leaving.askToLeave();
-			}});*/
 		Button ask = new Button("Ask");
 		ask.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -67,7 +51,9 @@ public class InRoom {
 			}});
 		background.add(leave, 0, 1, 2, 1);
 		background.add(ask, 2, 1, 2, 1);
-		background.add(tunnel, 4, 1, 2, 3);
+		if(room.getPassage()!=null) {
+			background.add(tunnel, 4, 1, 2, 3);
+		}
 	}
 	private void createRoomDescription() {
 		Label roomName = new Label(room.getName());

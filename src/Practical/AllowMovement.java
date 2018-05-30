@@ -44,39 +44,14 @@ public class AllowMovement {
 					int row = board.getBoard().getRowIndex(tile.getTile());
 					int col = board.getBoard().getColumnIndex(tile.getTile());
 					MovePlayer move = new MovePlayer(board, player);
-					if(move.canMove(diceTotal, tile)) {
+					if(player.inRoom()) {
+						CreateAlert roomAlert = new CreateAlert();
+						roomAlert.mustLeave();
+						dice1.reset();
+						dice2.reset();
+					}
+					else if(move.canMove(diceTotal, tile)) {
 						InRoom roomBox;
-						if(player.inRoom()) {
-							CreateAlert room;
-							if(tile.isPassageway()) {
-								Location end = tile.travelToLocation();
-								room = new CreateAlert();
-								boolean enter = room.enterRoom(end.getName());
-								if(enter) {
-									String passageEndName = end.getName().toLowerCase();
-									for(int a=0; a<tiles.size(); a++) {
-										Location loc = tiles.get(a);
-										String locName = loc.getName().toLowerCase();
-										if(passageEndName.contains(locName) && !(locName.contains("door"))) {
-											row = board.getBoard().getRowIndex(loc.getTile());
-											col = board.getBoard().getColumnIndex(loc.getTile());
-											a=tiles.size();
-											player.enterRoom(loc);
-											initialiseRoomBox();
-										}
-									}
-								}
-							}
-							else {
-								CreateAlert leaveRoom = new CreateAlert();
-								boolean leave = leaveRoom.askToLeave();
-								if(leave) {
-									player.leaveRoom();
-									initialiseRoomBox();
-									//background.getChildren().remove(getRoomBox());
-								}
-							}
-						}
 						if(!player.inRoom()) {
 							dice1.reset();
 							dice2.reset();
@@ -111,8 +86,8 @@ public class AllowMovement {
 								board.getBoard().add(token, col, row);
 							}
 						}
-						board.getBoard().getChildren().remove(token);
-						board.getBoard().add(token, player.getCol(), player.getRow());
+						/*board.getBoard().getChildren().remove(token);
+						board.getBoard().add(token, player.getCol(), player.getRow());*/
 						/*else if(!tile.getIsRoom()) {
 							board.getBoard().getChildren().remove(token);
 							board.getBoard().add(token, col, row);
@@ -128,7 +103,6 @@ public class AllowMovement {
 		}
 	}
 	private void initialiseRoomBox() {
-
 		if(player.inRoom()) {
 			if(roomBoxExists) {
 				background.getChildren().remove(roomBox.getBackground());
@@ -139,14 +113,19 @@ public class AllowMovement {
 			tunnel.setOnAction(new EventHandler<ActionEvent>() {
 				@Override
 				public void handle(ActionEvent event) {
-
+					usePassage();
 				}
 			});
 			leave.setOnAction(new EventHandler<ActionEvent>() {
 				@Override
 				public void handle(ActionEvent event) {
 					leaveRoom();
-				}});
+					player.leaveRoom();
+					initialiseRoomBox();
+					board.getBoard().getChildren().remove(player.getToken());
+					board.getBoard().add(player.getToken(), player.getCol(), player.getRow());
+				}
+			});
 			roomBox = new InRoom(player.getRoom(), noOfAIPlayers, AIPlayers, leave, tunnel);
 			background.add(roomBox.getBackground(), 22, 20, 6, 3);
 			roomBoxExists=true;
@@ -173,7 +152,7 @@ public class AllowMovement {
 		for(int a=0; a<tiles.size(); a++) {
 			Location loc = tiles.get(a);
 			String locName = loc.getName().toLowerCase();
-			if(room.getName().contains(locName) && room.getName().contains("door")) {
+			if(locName.contains(room.getName().toLowerCase()) && locName.toLowerCase().contains("door")) {
 				boolean leave = leaveRoom.askToLeave();
 				if(leave) {
 					row = board.getBoard().getRowIndex(loc.getTile());
@@ -184,6 +163,23 @@ public class AllowMovement {
 					player.setLocation(col, row);
 				}
 			}
+		}
+	}
+	private void usePassage() {
+		int row;
+		int col;
+		Location currentRoom = player.getRoom();
+		Location passage = currentRoom.getPassage();
+		if(passage != null) {
+			Location end = passage.travelToLocation();
+			row=end.getRow();
+			col=end.getCol();
+			player.leaveRoom();
+			initialiseRoomBox();
+			player.enterRoom(end);
+			initialiseRoomBox();
+			board.getBoard().getChildren().remove(player.getToken());
+			board.getBoard().add(player.getToken(), player.getCol(), player.getRow());
 		}
 	}
 }

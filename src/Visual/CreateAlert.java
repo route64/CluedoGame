@@ -437,6 +437,18 @@ public class CreateAlert extends Application {
 			alert.close();
 		}
 	}
+	public void mustLeave() {
+		Alert alert = new Alert(AlertType.WARNING);
+		Text dialog = new Text("You must leave the room before you can travel");
+		dialog.setFont(Font.font ("Arial", 20));
+		dialog.setTextAlignment(TextAlignment.CENTER);
+		dialog.setWrappingWidth(400);
+		alert.getDialogPane().setContent(dialog);
+		Optional<ButtonType>option = alert.showAndWait();
+		if(option.get()==ButtonType.OK) {
+			alert.close();
+		}
+	}
 	public boolean askToLeave() {
 		Alert alert = new Alert(AlertType.NONE);
 		Text dialog = new Text("Do you want to leave this room?");

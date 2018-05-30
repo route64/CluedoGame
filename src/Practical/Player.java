@@ -16,15 +16,20 @@ public class Player {
 	private int row;
 	private boolean inRoom;
 	private Location room;
+	private Label token;
 	
 	public Player() {
 		inRoom=false;
+		createToken();
 	}
-	public Label createToken() {
-		Label token = new Label();
+	private void createToken() {
+		token = new Label();
 		token.setBackground(new Background(new BackgroundFill(Color.DARKORCHID, new CornerRadii(2), new Insets(2))));
 		token.setMinSize(35, 35);
 		token.setMaxSize(35, 35);
+		//return token;
+	}
+	public Label getToken() {
 		return token;
 	}
 	public void setLocation(int col, int row) {

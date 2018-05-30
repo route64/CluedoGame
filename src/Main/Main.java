@@ -44,7 +44,7 @@ public class Main extends Application {
 		inRoom=false;
 		background = new GridPane();
 		player = new Player();
-		token = player.createToken();
+		token = player.getToken();
 	}
 	@Override
 	public void start(final Stage primaryStage) {

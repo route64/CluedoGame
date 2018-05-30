@@ -156,9 +156,11 @@ public class Board{ //extends Application{
 		Location spassage = new Location(false, false, 0, 1);
 		Location kpassage = new Location(false, false, 1, 17);
 		spassage.buildRoom(colWidth, rowHeight, Color.BLACK, "Study Passage");
-		spassage.makeSecretPassage(kpassage);
+		spassage.makeSecretPassage(kitchen);
 		kpassage.buildRoom(colWidth, rowHeight, Color.BLACK, "kitchen passage");
-		kpassage.makeSecretPassage(spassage);
+		kpassage.makeSecretPassage(study);
+		study.givePassage(spassage);
+		kitchen.givePassage(kpassage);
 		boardGrid.add(spassage.getTile(), 0, 1);
 		boardGrid.add(kpassage.getTile(), 1, 17);
 		boardTiles.add(spassage);

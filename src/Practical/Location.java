@@ -20,6 +20,8 @@ public class Location {
 	private int col;
 	private Location travelTo;
 	private boolean isPassageWay;
+	//private boolean containsPassage;
+	private Location passage;
 	
 	public Location(boolean isRoom, boolean isDoorway, int col, int row) {
 		this.isRoom = isRoom;
@@ -70,5 +72,12 @@ public class Location {
 	}
 	public boolean isPassageway() {
 		return isPassageWay;
+	}
+	public void givePassage(Location passage) {
+		//containsPassage = true;
+		this.passage = passage;
+	}
+	public Location getPassage() {
+		return passage;
 	}
 }
